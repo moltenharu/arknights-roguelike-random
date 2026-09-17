@@ -1,0 +1,444 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>명일방주 로그라이크 랜덤 챌린지</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            background: #1b1b1b;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .result {
+            background: #292929;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #444;
+            gap: 20px;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .value {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        button {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            background: #eeeeee;
+            color: #111;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #cccccc;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .subtext {
+            display: block;
+            color: #999;
+            font-size: 12px;
+            font-weight: normal;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>명일방주<br>로그라이크 랜덤 챌린지</h1>
+
+    <div class="result">
+
+        <div class="item">
+            <div class="label">테마</div>
+            <div class="value" id="theme">-</div>
+        </div>
+
+        <div class="item">
+            <div class="label">승천</div>
+            <div class="value" id="ascension">-</div>
+        </div>
+
+        <div class="item">
+            <div class="label">분대</div>
+            <div class="value" id="squad">-</div>
+        </div>
+
+        <div class="item">
+            <div class="label">첫 6성 직군</div>
+            <div class="value" id="class">-</div>
+        </div>
+
+        <div class="item">
+            <div class="label">목표 엔딩</div>
+            <div class="value" id="ending">-</div>
+        </div>
+
+    </div>
+
+    <button onclick="generateChallenge()">
+        🎲 챌린지 생성
+    </button>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   여기부터 데이터를 수정하면 됩니다.
+   아래쪽 코드는 건드릴 필요 없습니다.
+   ========================================================= */
+
+
+/* -------------------------
+   테마 데이터
+   ------------------------- */
+
+const themes = {
+    "팬텀": {
+        squads: [
+            { name: "지휘", weight: 10 },
+            { name: "집합", weight: 10 },
+            { name: "지원", weight: 10 },
+            { name: "예봉", weight: 10 },
+            { name: "강습", weight: 10 },
+            { name: "방어", weight: 10 },
+            { name: "원거리", weight: 10 },
+            { name: "파괴", weight: 10 },
+            { name: "연구", weight: 10 },
+            { name: "고급화", weight: 10 }
+        ],
+        endings: [
+            { name: "1", weight: 10 },
+            { name: "2", weight: 10 },
+            { name: "3", weight: 10 },
+            { name: "4", weight: 10 },
+            { name: "13", weight: 10 },
+            { name: "14", weight: 10 },
+            { name: "23", weight: 10 },
+            { name: "24", weight: 10 }
+        ]
+    },
+
+    "미즈키": {
+        squads: [
+            { name: "지휘", weight: 10 },
+            { name: "집합", weight: 10 },
+            { name: "지원", weight: 10 },
+            { name: "예봉", weight: 10 },
+            { name: "강습", weight: 10 },
+            { name: "방어", weight: 10 },
+            { name: "원거리", weight: 10 },
+            { name: "파괴", weight: 10 },
+            { name: "연구", weight: 10 },
+            { name: "고급화", weight: 10 },
+            { name: "마음가짐", weight: 10 },
+            { name: "적재적소", weight: 10 },
+            { name: "인적자원", weight: 10 }
+        ],
+        endings: [
+            { name: "1", weight: 10 },
+            { name: "2", weight: 10 },
+            { name: "3", weight: 10 },
+            { name: "4", weight: 10 },
+            { name: "13", weight: 10 },
+            { name: "14", weight: 10 },
+            { name: "23", weight: 10 },
+            { name: "24", weight: 10 }
+        ]
+    },
+
+    "사미": {
+        squads: [
+            { name: "지휘", weight: 10 },
+            { name: "집합", weight: 10 },
+            { name: "지원", weight: 10 },
+            { name: "예봉", weight: 10 },
+            { name: "강습", weight: 10 },
+            { name: "방어", weight: 10 },
+            { name: "원거리", weight: 10 },
+            { name: "파괴", weight: 10 },
+            { name: "고급화", weight: 10 },
+            { name: "영원한 사냥", weight: 10 },
+            { name: "생존지원", weight: 10 },
+            { name: "과학주의", weight: 10 },
+            { name: "특훈", weight: 10 }
+        ],
+        endings: [
+            { name: "1", weight: 10 },
+            { name: "2", weight: 10 },
+            { name: "3", weight: 10 },
+            { name: "4", weight: 10 },
+            { name: "13", weight: 10 },
+            { name: "14", weight: 10 },
+            { name: "134", weight: 10 },
+            { name: "23", weight: 10 },
+            { name: "24", weight: 10 },
+            { name: "234", weight: 10 }
+        ]
+    },
+
+    "살카즈": {
+        squads: [
+            { name: "지휘", weight: 10 },
+            { name: "집합", weight: 10 },
+            { name: "지원", weight: 10 },
+            { name: "예봉", weight: 10 },
+            { name: "강습", weight: 10 },
+            { name: "방어", weight: 10 },
+            { name: "원거리", weight: 10 },
+            { name: "파괴", weight: 10 },
+            { name: "고급화", weight: 10 },
+            { name: "영혼호송", weight: 10 },
+            { name: "박학다식", weight: 10 },
+            { name: "도면제작", weight: 10 },
+            { name: "임기응변", weight: 10 },
+            { name: "연금술", weight: 10 },
+            { name: "의태학자", weight: 10 },
+            { name: "기상천외", weight: 10 },
+            { name: "전문가", weight: 10 }
+        ],
+        endings: [
+            { name: "1", weight: 10 },
+            { name: "2", weight: 10 },
+            { name: "3", weight: 10 },
+            { name: "4", weight: 10 },
+            { name: "5", weight: 10 },
+            { name: "13", weight: 10 },
+            { name: "14", weight: 10 },
+            { name: "135", weight: 10 },
+            { name: "145", weight: 10 },
+            { name: "23", weight: 10 },
+            { name: "24", weight: 10 },
+            { name: "235", weight: 10 },
+            { name: "245", weight: 10 }
+        ]
+    },
+
+    "쉐이": {
+        squads: [
+            { name: "지휘", weight: 10 },
+            { name: "집합", weight: 10 },
+            { name: "지원", weight: 10 },
+            { name: "예봉", weight: 10 },
+            { name: "강습", weight: 10 },
+            { name: "방어", weight: 10 },
+            { name: "원거리", weight: 10 },
+            { name: "파괴", weight: 10 },
+            { name: "고급화", weight: 10 },
+            { name: "특근", weight: 10 },
+            { name: "고지대", weight: 10 },
+            { name: "지상", weight: 10 },
+            { name: "방문객", weight: 10 },
+            { name: "사세대", weight: 10 },
+            { name: "천사부", weight: 10 },
+            { name: "꽃다발", weight: 10 },
+            { name: "초강수", weight: 10 },
+            { name: "쉐이울림", weight: 10 }
+        ],
+        endings: [
+            { name: "1", weight: 10 },
+            { name: "2", weight: 10 },
+            { name: "3", weight: 10 },
+            { name: "4", weight: 10 },
+            { name: "5", weight: 10 },
+            { name: "13", weight: 10 },
+            { name: "14", weight: 10 },
+            { name: "15", weight: 10 },
+            { name: "135", weight: 10 },
+            { name: "145", weight: 10 },
+            { name: "23", weight: 10 },
+            { name: "24", weight: 10 },
+            { name: "25", weight: 10 },
+            { name: "235", weight: 10 },
+            { name: "245", weight: 10 }
+        ]
+    }
+};
+
+
+/* -------------------------
+   8가지 직군
+   ------------------------- */
+
+const classes = [
+    "뱅가드",
+    "가드",
+    "디펜더",
+    "스나이퍼",
+    "캐스터",
+    "메딕",
+    "서포터",
+    "스패셜리스트"
+];
+
+
+/* -------------------------
+   승천
+   ------------------------- */
+
+const ascensions = [];
+
+for (let i = 0; i <= 18; i++) {
+    ascensions.push(i);
+}
+
+
+/* =========================================================
+   여기부터 아래 코드는 건드리지 않아도 됩니다.
+   ========================================================= */
+
+
+/*
+   일반 랜덤
+*/
+
+function randomChoice(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+
+/*
+   가중치 랜덤
+
+   예:
+   A = 10
+   B = 10
+   C = 5
+
+   그러면 C가 A/B보다 절반 정도의 확률로 나옵니다.
+*/
+
+function weightedRandom(array) {
+
+    let totalWeight = 0;
+
+    for (const item of array) {
+        totalWeight += item.weight;
+    }
+
+    let random = Math.random() * totalWeight;
+
+    for (const item of array) {
+
+        random -= item.weight;
+
+        if (random < 0) {
+            return item;
+        }
+    }
+
+}
+
+
+/*
+   챌린지 생성
+*/
+
+function generateChallenge() {
+
+    // 1. 테마 선택
+    const themeNames = Object.keys(themes);
+
+    const themeName = randomChoice(themeNames);
+
+    const themeData = themes[themeName];
+
+
+    // 2. 승천 선택
+    const ascension = randomChoice(ascensions);
+
+
+    // 3. 해당 테마의 분대 선택
+    const squad = weightedRandom(themeData.squads);
+
+
+    // 4. 첫 6성 직군 선택
+    const firstClass = randomChoice(classes);
+
+
+    // 5. 해당 테마의 엔딩 선택
+    const ending = weightedRandom(themeData.endings);
+
+
+    // 6. 화면에 출력
+
+    document.getElementById("theme").textContent = themeName;
+
+    document.getElementById("ascension").textContent =
+        ascension + "승천";
+
+    document.getElementById("squad").textContent =
+        squad.name;
+
+    document.getElementById("class").textContent =
+        firstClass;
+
+    document.getElementById("ending").textContent =
+        ending.name;
+}
+
+
+/*
+   사이트를 처음 열었을 때
+   자동으로 한 번 생성
+*/
+
+generateChallenge();
+
+</script>
+
+</body>
+</html>
+```
